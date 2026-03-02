@@ -1,416 +1,484 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/><meta http-equiv="X-Frame-Options" content="DENY"/>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
 <meta name="referrer" content="strict-origin-when-cross-origin"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Agra Unseen</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:#07060a;color:#f2e8d4;font-family:'Cormorant Garamond',serif}
-:root{--gold:#c9a84c;--gold-l:#e8c96a;--cream:#f2e8d4;--cream-d:rgba(242,232,212,0.65);--cream-f:rgba(242,232,212,0.3);--bg:#07060a;--border:rgba(201,168,76,0.16);--border-b:rgba(201,168,76,0.42)}
-.fadeIn{animation:fadeIn 0.9s ease both}
-.slideUp{animation:slideUp 0.75s cubic-bezier(.22,1,.36,1) both}
+body{background:#07060a;color:#f2e8d4;font-family:'Cormorant Garamond',serif;min-height:100vh}
+:root{
+  --gold:#c9a84c;--gold-l:#e8c96a;
+  --cream:#f2e8d4;--cream-d:rgba(242,232,212,.65);--cream-f:rgba(242,232,212,.3);
+  --border:rgba(201,168,76,.16);--border-b:rgba(201,168,76,.42)
+}
+.hidden{display:none!important}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes slideUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes pulse{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:.7;transform:scale(1.03)}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-@keyframes shimmer{0%{background-position:0% center}100%{background-position:200% center}}
+@keyframes shimmer{0%{background-position:0%}100%{background-position:200%}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-.gold-text{background:linear-gradient(135deg,#c9a84c 0%,#f0d060 40%,#c9a84c 70%,#e8c96a 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s linear infinite}
-.tag{font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--gold);opacity:.85}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:.7}}
+
+/* AMBIENT */
+#amb{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.orb1{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(130,20,8,.14),transparent);top:-200px;right:-150px;filter:blur(60px)}
+.orb2{position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.055),transparent);bottom:-300px;left:-200px;filter:blur(80px)}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:50;background:rgba(7,6,10,.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:900px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:56px}
+.nav-logo{display:flex;align-items:center;gap:8px;font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--cream);letter-spacing:1px}
+.nav-logo span:first-child{color:var(--gold);animation:float 4s ease infinite}
+.nav-book{font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.4);padding:7px 14px;text-decoration:none;transition:all .2s}
+.nav-book:hover{background:rgba(201,168,76,.1)}
+.tab-bar{max-width:900px;margin:0 auto;padding:0 20px;display:flex;border-bottom:none;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab{background:none;border:none;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--cream-f);padding:10px 14px;transition:color .2s;white-space:nowrap;position:relative}
+.tab:hover{color:var(--gold-l)}
+.tab.active{color:var(--gold)}
+.tab.active::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:18px;height:1px;background:var(--gold)}
+
+/* LAYOUT */
+.wrap{max-width:860px;margin:0 auto;padding:0 20px;position:relative;z-index:1;padding-bottom:120px}
+
+/* TYPOGRAPHY */
+.tag{font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--gold);opacity:.85}
 .divider{width:44px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:14px auto}
-.nav-item{background:none;border:none;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:.65rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--cream-f);padding:8px 12px;transition:color .2s;position:relative}
-.nav-item:hover{color:var(--gold-l)}
-.nav-item.on{color:var(--gold)}
-.nav-item.on::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:18px;height:1px;background:var(--gold)}
-.tabnav{display:flex;border-bottom:1px solid var(--border);overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none}
-.tabnav::-webkit-scrollbar{display:none}
-.card{background:linear-gradient(135deg,rgba(255,255,255,.022),rgba(201,168,76,.018));border:1px solid var(--border);padding:26px;transition:border-color .3s,transform .3s;position:relative;overflow:hidden}
+.gold-shimmer{background:linear-gradient(135deg,#c9a84c,#f0d060,#c9a84c,#e8c96a);background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s linear infinite}
+
+/* CARDS */
+.card{background:linear-gradient(135deg,rgba(255,255,255,.02),rgba(201,168,76,.018));border:1px solid var(--border);padding:24px;transition:border-color .3s,transform .3s}
 .card:hover{border-color:var(--border-b);transform:translateY(-2px)}
-.badge{display:inline-block;font-family:'Montserrat',sans-serif;font-size:.57rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.38);padding:3px 8px;margin-bottom:10px}
-.ibtn{background:rgba(255,255,255,.022);border:1px solid var(--border);color:var(--cream-f);cursor:pointer;padding:12px 14px;text-align:left;transition:all .2s;width:100%;font-family:'Cormorant Garamond',serif}
-.ibtn:hover{border-color:var(--border-b);color:var(--cream);background:rgba(201,168,76,.05)}
-.ibtn.on{border-color:var(--gold);background:rgba(201,168,76,.1);color:var(--cream)}
-.tbtn{background:rgba(255,255,255,.018);border:1px solid var(--border);color:var(--cream-f);cursor:pointer;padding:16px 20px;transition:all .2s;font-family:'Cormorant Garamond',serif;flex:1;min-width:120px;text-align:center}
-.tbtn:hover{border-color:var(--border-b);color:var(--cream)}
-.tbtn.on{border-color:var(--gold);background:rgba(201,168,76,.1);color:var(--cream)}
-.bgold{background:linear-gradient(135deg,#c9a84c,#a88030);color:#060409;border:none;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;padding:15px 44px;transition:all .3s;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%)}
-.bgold:hover{background:linear-gradient(135deg,#e8c96a,#c9a84c);transform:translateY(-2px);box-shadow:0 10px 40px rgba(201,168,76,.28)}
-.bgold:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none}
-.boutline{background:none;border:1px solid var(--border-b);color:var(--cream-d);cursor:pointer;font-family:'Montserrat',sans-serif;font-size:.68rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;padding:13px 28px;transition:all .3s}
-.boutline:hover{border-color:var(--gold);color:var(--gold)}
-.wabtn{display:inline-flex;align-items:center;gap:9px;background:linear-gradient(135deg,#1a8a3a,#145c28);color:white;text-decoration:none;font-family:'Montserrat',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:15px 36px;transition:all .3s}
-.wabtn:hover{background:linear-gradient(135deg,#22aa48,#1a8a3a);transform:translateY(-2px)}
-.cbtn{display:inline-flex;align-items:center;gap:8px;background:none;border:1px solid rgba(255,255,255,.14);color:var(--cream-f);text-decoration:none;font-family:'Montserrat',sans-serif;font-size:.67rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;padding:13px 26px;transition:all .3s}
-.cbtn:hover{border-color:var(--cream-d);color:var(--cream)}
-.scard{background:rgba(255,255,255,.018);border:1px solid var(--border);padding:30px;position:relative;transition:all .3s}
-.scard.hl{background:linear-gradient(135deg,rgba(201,168,76,.08),rgba(201,168,76,.03));border-color:var(--gold)}
-.scard:hover{transform:translateY(-3px);border-color:var(--border-b)}
-select{background:rgba(255,255,255,.025);border:1px solid var(--border-b);color:var(--cream);padding:14px 20px;font-family:'Cormorant Garamond',serif;font-size:1.05rem;width:100%;max-width:340px;outline:none;cursor:pointer;appearance:none}
+.badge{display:inline-block;font-family:'Montserrat',sans-serif;font-size:.55rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.35);padding:3px 8px;margin-bottom:10px}
+
+/* BUTTONS */
+.btn-gold{background:linear-gradient(135deg,#c9a84c,#a88030);color:#06040a;border:none;cursor:pointer;font-family:'Montserrat',sans-serif;font-size:.7rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;padding:14px 40px;transition:all .3s;clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%)}
+.btn-gold:hover{background:linear-gradient(135deg,#e8c96a,#c9a84c);transform:translateY(-2px);box-shadow:0 10px 40px rgba(201,168,76,.25)}
+.btn-gold:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-outline{background:none;border:1px solid var(--border-b);color:var(--cream-d);cursor:pointer;font-family:'Montserrat',sans-serif;font-size:.66rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;padding:12px 26px;transition:all .3s}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
+.btn-wa{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#1a8a3a,#145c28);color:#fff;text-decoration:none;font-family:'Montserrat',sans-serif;font-size:.7rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:14px 32px;transition:all .3s}
+.btn-wa:hover{background:linear-gradient(135deg,#22aa48,#1a8a3a);transform:translateY(-2px)}
+.btn-call{display:inline-flex;align-items:center;gap:8px;background:none;border:1px solid rgba(255,255,255,.14);color:var(--cream-f);text-decoration:none;font-family:'Montserrat',sans-serif;font-size:.65rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;padding:12px 24px;transition:all .3s}
+.btn-call:hover{border-color:var(--cream-d);color:var(--cream)}
+
+/* FORM */
+.int-btn{background:rgba(255,255,255,.02);border:1px solid var(--border);color:var(--cream-f);cursor:pointer;padding:12px 14px;text-align:left;transition:all .2s;width:100%}
+.int-btn:hover{border-color:var(--border-b);color:var(--cream)}
+.int-btn.selected{border-color:var(--gold);background:rgba(201,168,76,.1);color:var(--cream)}
+.time-btn{background:rgba(255,255,255,.018);border:1px solid var(--border);color:var(--cream-f);cursor:pointer;padding:14px 18px;transition:all .2s;flex:1;min-width:110px;text-align:center}
+.time-btn:hover{border-color:var(--border-b);color:var(--cream)}
+.time-btn.selected{border-color:var(--gold);background:rgba(201,168,76,.1);color:var(--cream)}
+select{background:rgba(255,255,255,.025);border:1px solid var(--border-b);color:var(--cream);padding:13px 18px;font-family:'Cormorant Garamond',serif;font-size:1.05rem;width:100%;max-width:320px;outline:none;cursor:pointer;appearance:none}
 select option{background:#120d08;color:var(--cream)}
-.rbody{white-space:pre-wrap;line-height:2;font-size:1.06rem}
-.rbody b,.rbody strong{color:var(--gold);font-family:'Playfair Display',serif;font-size:1.15rem;display:block;margin-top:26px;margin-bottom:7px;font-weight:600}
-.ring{width:50px;height:50px;border:1.5px solid rgba(201,168,76,.1);border-top:1.5px solid var(--gold);border-radius:50%;animation:spin 1.2s linear infinite;margin:0 auto 26px}
-.fcta{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(7,6,10,.97),rgba(7,6,10,.82));border-top:1px solid var(--border);padding:14px 24px;display:flex;gap:12px;justify-content:center;align-items:center;z-index:100;backdrop-filter:blur(14px)}
+
+/* RESULT */
+.result-box{background:linear-gradient(135deg,rgba(18,12,7,.93),rgba(10,7,14,.93));border:1px solid var(--border);padding:clamp(20px,5vw,48px);position:relative;line-height:2;font-size:1.05rem}
+.result-box .corner{position:absolute;color:rgba(201,168,76,.2);font-size:.9rem}
+.cursor{display:inline-block;width:2px;height:1.1em;background:var(--gold);margin-left:2px;animation:blink .8s step-end infinite;vertical-align:text-bottom}
+
+/* LOADER */
+.ring{width:48px;height:48px;border:1.5px solid rgba(201,168,76,.1);border-top:1.5px solid var(--gold);border-radius:50%;animation:spin 1.2s linear infinite;margin:0 auto 24px}
+
+/* SERVICE CARD */
+.scard{background:rgba(255,255,255,.018);border:1px solid var(--border);padding:28px;position:relative;transition:all .3s}
+.scard.popular{border-color:var(--gold);background:linear-gradient(135deg,rgba(201,168,76,.08),rgba(201,168,76,.02))}
+.scard:hover{transform:translateY(-3px);border-color:var(--border-b)}
+.pop-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--gold);color:#06040a;font-family:'Montserrat',sans-serif;font-size:.5rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 14px;white-space:nowrap}
+
+/* GRIDS */
+.grid-2{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.flex-time{display:flex;gap:10px;flex-wrap:wrap}
+
+/* STATS */
+.stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:40px;margin-top:56px}
+.stat-val{font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--gold);font-weight:600}
+.stat-lbl{font-family:'Montserrat',sans-serif;font-size:.56rem;letter-spacing:2px;text-transform:uppercase;color:var(--cream-f);margin-top:4px}
+
+/* REVIEW */
+.rev-card{background:linear-gradient(135deg,rgba(255,255,255,.02),rgba(201,168,76,.018));border:1px solid var(--border);padding:18px}
+.rev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:32px}
+
+/* CTA */
+.cta-box{background:linear-gradient(135deg,rgba(201,168,76,.07),rgba(201,168,76,.02));border:1px solid var(--gold);padding:32px;margin-bottom:28px}
+.cta-center{text-align:center;padding:40px 28px;border:1px solid var(--border)}
+.cta-gold{text-align:center;padding:44px 28px;border:1px solid var(--gold);background:linear-gradient(135deg,rgba(201,168,76,.06),rgba(201,168,76,.02))}
+
+/* FOOTER */
+.fcta{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(7,6,10,.97),rgba(7,6,10,.8));border-top:1px solid var(--border);padding:12px 20px;display:flex;gap:10px;justify-content:center;align-items:center;z-index:100;backdrop-filter:blur(14px)}
+.foot{border-top:1px solid var(--border);padding-top:24px;text-align:center;margin-top:16px}
+
+/* SCAM WARNING */
+.warn-box{background:rgba(160,30,10,.08);border:1px solid rgba(160,30,10,.24);border-left:3px solid rgba(190,55,30,.55);padding:16px 24px;margin-bottom:32px}
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
-const PHONE="8279890892";
-const WA=`https://wa.me/91${PHONE}`;
-const CALL=`tel:+91${PHONE}`;
-const NATS=["American","Canadian","Brazilian","Mexican","Argentinian","Colombian","British","French","German","Italian","Spanish","Portuguese","Dutch","Belgian","Swiss","Austrian","Swedish","Norwegian","Danish","Finnish","Polish","Czech","Hungarian","Romanian","Greek","Turkish","Russian","Ukrainian","Israeli","Saudi Arabian","Emirati","Qatari","Egyptian","South African","Nigerian","Kenyan","Moroccan","Japanese","Chinese","South Korean","Singaporean","Malaysian","Thai","Vietnamese","Indonesian","Filipino","Taiwanese","Australian","New Zealander","Indian","Pakistani","Bangladeshi","Sri Lankan","Nepali","Other"];
-const INTS=[{id:"history",label:"History & Architecture",icon:"🏛️",desc:"The empire behind the marble"},{id:"spiritual",label:"Spirituality & Sufism",icon:"🕌",desc:"The soul of Mughal philosophy"},{id:"art",label:"Art & Craftsmanship",icon:"🎨",desc:"The artisans who carry the legacy"},{id:"food",label:"Food & Street Culture",icon:"🍛",desc:"Flavours unchanged for centuries"},{id:"photography",label:"Photography & Light",icon:"📸",desc:"The angle nobody shows you"},{id:"stories",label:"Human Stories",icon:"📖",desc:"The people behind the monuments"},{id:"shopping",label:"Authentic Shopping",icon:"💎",desc:"Real vs fake — know the difference"},{id:"offbeat",label:"Hidden & Offbeat",icon:"🗺️",desc:"The Agra tourists never find"}];
-const TIMES=[{id:"2hours",label:"2 Hours",sub:"Quick & essential"},{id:"halfday",label:"Half Day",sub:"Morning or afternoon"},{id:"fullday",label:"Full Day",sub:"Sunrise to sunset"},{id:"twodays",label:"2 Days",sub:"The real Agra"}];
-const SCAMS=[{icon:"🚗",title:"The 'Taj is Closed Today' Lie",body:"A driver will tell you the Taj is closed and offer to take you to a marble shop. The Taj closes only on Fridays. Never believe this from a stranger."},{icon:"💎",title:"Fake Marble at Real Prices",body:"Most souvenirs are alabaster not marble. Real marble is cold to touch even in summer. Tap it — marble sounds solid, alabaster sounds hollow."},{icon:"📸",title:"The Friendly Photographer",body:"Someone offers to take your photo then demands ₹500–2000. Smile, say no thank you, keep walking."},{icon:"🎫",title:"Fake Ticket Sellers",body:"Never buy Taj tickets outside the gate. Official tickets cost ₹1100 for foreigners. Buy only at official ASI kiosks."},{icon:"🛺",title:"The Broken Meter",body:"Always fix price before getting into any auto. Fair rate from Agra Cantonment to Taj gate is ₹150–200."},{icon:"🏨",title:"The Hotel Redirect",body:"Your driver may claim your hotel burned down. Call your hotel directly immediately."},{icon:"🌿",title:"The Commission Guide",body:"If your guide insists on visiting a store you didn't ask for — you are the product being sold."},{icon:"👶",title:"Organized Begging",body:"If you want to help, buy food from a shop and give that — not cash."}];
-const GEMS=[{icon:"🌅",title:"Mehtab Bagh at Sunset",badge:"FREE ENTRY",body:"Directly across the Yamuna from the Taj. Where Shah Jahan sat under house arrest staring at his wife's tomb. The most emotional spot in Agra. Almost no tourists."},{icon:"🕌",title:"Itimad-ud-Daulah — Baby Taj",badge:"10 MIN AWAY",body:"Built 14 years before the Taj. First Mughal building entirely in white marble. Often completely empty. Architects consider it more precise than the Taj itself."},{icon:"🏰",title:"Musamman Burj — Prisoner's Tower",badge:"AGRA FORT",body:"Where Shah Jahan spent his last 8 years imprisoned by his son, staring at the Taj. He died here eyes fixed on Mumtaz's tomb. Ask guards specifically for 'Musamman Burj'."},{icon:"🎨",title:"Living Pietra Dura Workshops",badge:"FREE TO VISIT",body:"In the lanes behind Taj Ganj, families have practiced stone inlay for 18 generations — the same craft that built the Taj. Watch them work. Buy direct at fraction of shop prices."},{icon:"🍽️",title:"Pinch of Spice",badge:"LOCAL PICK",body:"MG Road. Mughlai food tracing recipes to royal kitchens. Order the Nihari and Shahi Tukda."},{icon:"🌙",title:"Taj by Moonlight",badge:"BOOK IN ADVANCE",body:"On full moon nights ASI allows moonlight viewing 10PM–midnight. Only 400 tickets. Shah Jahan designed the marble to glow differently under moonlight."},{icon:"📿",title:"Jama Masjid Dawn Prayer",badge:"SPIRITUAL",body:"Built by Shah Jahan's daughter. A dawn prayer unchanged from the 17th century. Something that has happened here every day for 370 years."},{icon:"🛤️",title:"Kinari Bazaar",badge:"NO TOURISTS",body:"The wholesale market where real Agra lives. A ₹50 chai here will teach you more than any tour or guidebook."}];
-const HACKS=[{icon:"⏰",tip:"Enter at 6 AM opening. 40 minutes before tour buses arrive. The Taj at dawn with mist off the Yamuna — you will never forget it."},{icon:"👟",tip:"Wear slip-on shoes. You must remove footwear at the mausoleum. Socks + slip-ons = the sanity everyone else lacks."},{icon:"💧",tip:"Buy water before entering. Inside the complex vendors charge 3x."},{icon:"📱",tip:"Download Google Maps offline for Agra before arriving. Data is patchy near the Taj complex."},{icon:"🌡️",tip:"October to March is ideal. April to June brutal — 45°C+. If visiting in summer, arrive at opening and leave by 10 AM."},{icon:"🎒",tip:"Tripods, selfie sticks, and food are prohibited inside. Leave at the free cloakroom near the gate."},{icon:"💰",tip:"Carry cash in small denominations. Many small shops and autos don't accept foreign cards."},{icon:"🚶",tip:"Walk the full perimeter before entering the mausoleum. The gardens and gateways are as significant as the tomb itself."},{icon:"📷",tip:"Best photo: stand inside the main gateway arch looking through — the dome frames itself perfectly. Every iconic Taj photo uses this."},{icon:"🤝",tip:"A guide who actually lives here changes everything. WhatsApp +91 8279890892 before your visit."}];
-const REVS=[{name:"Sarah M.",country:"🇺🇸 USA",text:"I've traveled to 40 countries. This was the most personal cultural experience I've ever had.",stars:5},{name:"Thomas K.",country:"🇩🇪 Germany",text:"Best decision of our entire India trip. The workshop visit and Mehtab Bagh at sunset — unforgettable.",stars:5},{name:"Yuki H.",country:"🇯🇵 Japan",text:"His knowledge from a local perspective gave me a completely different understanding.",stars:5},{name:"Priya & Raj",country:"🇬🇧 UK",text:"Even as Indians we learned things we never knew. The pietra dura workshop was beyond special.",stars:5}];
-const SVCS=[{name:"Taj Sunrise Experience",price:"₹2,500",dur:"3 hours",desc:"Private guided walk. Dawn entry. Stories nobody else tells. Artisan workshop visit.",hl:false},{name:"Full Agra Immersion",price:"₹4,500",dur:"7 hours",desc:"Taj + Agra Fort + Baby Taj + local lunch + Kinari Bazaar. The complete picture.",hl:true},{name:"Two-Day Deep Dive",price:"₹8,000",dur:"2 days",desc:"Everything above + Fatehpur Sikri + moonlight Taj if available + farewell dinner.",hl:false},{name:"Custom Experience",price:"Ask Me",dur:"Flexible",desc:"Photography tours, architecture deep-dives, food trails. Built entirely around you.",hl:false}];
 
-const {useState,useEffect,useRef}=React;
+<div id="amb"><div class="orb1"></div><div class="orb2"></div></div>
 
-function App(){
-  const [tab,setTab]=useState("home");
-  const [step,setStep]=useState("welcome");
-  const [ans,setAns]=useState({nat:"",ints:[],time:""});
-  const [result,setResult]=useState("");
-  const [vc,setVc]=useState(0);
-  const [err,setErr]=useState("");
-  const ref=useRef(null);
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo"><span>✦</span><span>Agra <em>Unseen</em></span></div>
+    <a href="https://wa.me/918279890892" target="_blank" class="nav-book">Book Now</a>
+  </div>
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('home',this)">AI Guide</button>
+    <button class="tab" onclick="showTab('hidden',this)">Hidden Gems</button>
+    <button class="tab" onclick="showTab('scams',this)">Scam Shield</button>
+    <button class="tab" onclick="showTab('hacks',this)">Hacks</button>
+    <button class="tab" onclick="showTab('book',this)">Book</button>
+  </div>
+</nav>
 
-  useEffect(()=>{
-    if(result&&vc<result.length){const t=setTimeout(()=>setVc(v=>Math.min(v+3,result.length)),10);return()=>clearTimeout(t);}
-  },[result,vc]);
+<div class="wrap">
 
-  useEffect(()=>{
-    if(step==="result"&&ref.current)setTimeout(()=>ref.current.scrollIntoView({behavior:"smooth",block:"start"}),100);
-  },[step]);
+<!-- ═══ HOME ═══ -->
+<div id="tab-home">
 
-  const togInt=(id)=>setAns(p=>({...p,ints:p.ints.includes(id)?p.ints.filter(i=>i!==id):[...p.ints,id]}));
-
-  const generate=async()=>{
-    setStep("loading");setErr("");
-    const il=ans.ints.map(id=>INTS.find(i=>i.id===id)?.label).join(", ");
-    const prompt=`You are a 24-year-old local from Agra — grew up in the shadow of the Taj Mahal, deeply studying Indian and Mughal history. Warm, intelligent, passionate about Agra.
-
-Tourist: Nationality: ${ans.nat}, Interests: ${il}, Time: ${ans.time}
-
-Use EXACTLY these headers:
-
-**YOUR AGRA BEGINS HERE**
-2-3 sentences. Find a surprising historical connection between ${ans.nat} and the Mughal world. Make them feel their story is woven into Agra's fabric.
-
-**THE SECRET THE GUIDEBOOKS MISSED**
-One breathtaking lesser-known story matched to their interests. Options: the Taj minarets lean outward by design so if they fall they won't crush the tomb; Shah Jahan planned a black marble Taj for himself before being imprisoned; the calligraphy uses forced perspective — letters get larger higher up to appear uniform from ground; 28 gemstones from across the ancient world are inlaid in the marble. Pick the one that hits hardest.
-
-**YOUR PERFECT ${ans.time.toUpperCase()} ITINERARY**
-Time-specific vivid itinerary. One hidden spot only a local knows, one authentic food stop, one moment of stillness, one experience connecting their interests to this city.
-
-**ONE THING BEFORE YOU LEAVE**
-One single action not on any tourist list that permanently separates their visit from every other visitor's.
-
-**THE QUESTION FOR YOUR FLIGHT HOME**
-One philosophical question about Shah Jahan, love, empire, or mortality tailored to their background.
-
-Write as a warm knowledgeable local friend. Intimate, specific, occasionally poetic, always honest.`;
-
-    try{
-      const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","anthropic-dangerous-direct-browser-access":"true"},,body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,messages:[{role:"user",content:prompt}]})});
-      const d=await r.json();
-      const t=d.content?.map(c=>c.text||"").join("")||"Something went wrong. Please try again.";
-      setResult(t);setVc(0);setStep("result");
-    }catch{setErr("Connection failed. Please check your internet and try again.");setStep("questions");}
-  };
-
-  const ok=ans.nat&&ans.ints.length>0&&ans.time;
-  const TABS=[{id:"home",l:"AI Guide"},{id:"hidden",l:"Hidden Gems"},{id:"scams",l:"Scam Shield"},{id:"hacks",l:"Hacks"},{id:"book",l:"Book"}];
-
-  const SH=({tag,title,sub})=>(
-    <div style={{textAlign:"center",marginBottom:"48px"}}>
-      <p className="tag">{tag}</p><div className="divider"/>
-      <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:"clamp(1.8rem,5vw,2.8rem)",fontWeight:400,color:"var(--cream)",lineHeight:1.2,marginBottom:"10px"}}>{title}</h2>
-      {sub&&<p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.12rem",color:"var(--cream-f)",fontStyle:"italic"}}>{sub}</p>}
+  <!-- WELCOME -->
+  <div id="s-welcome" style="text-align:center;padding:80px 0 60px;animation:fadeIn .9s ease">
+    <p class="tag">Agra, India · Est. 1526</p>
+    <div class="divider"></div>
+    <h1 style="font-family:'Playfair Display',serif;font-size:clamp(3rem,11vw,6rem);font-weight:400;line-height:1;color:var(--cream)">Agra</h1>
+    <h1 style="font-family:'Playfair Display',serif;font-size:clamp(3rem,11vw,6rem);font-weight:400;font-style:italic;line-height:1.1"><span class="gold-shimmer">Unseen</span></h1>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(1rem,3vw,1.3rem);font-weight:300;font-style:italic;color:var(--cream-f);max-width:500px;margin:28px auto 40px;line-height:1.9">
+      Seventeen million people visit the Taj each year.<br/>Almost none of them truly <em style="color:var(--cream-d)">see</em> it.
+    </p>
+    <p style="font-family:'Montserrat',sans-serif;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:rgba(201,168,76,.4);margin-bottom:36px">Your experience begins in 60 seconds</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button class="btn-gold" onclick="showScreen('questions')">Begin My Experience</button>
+      <button class="btn-outline" onclick="showTab('hidden',document.querySelectorAll('.tab')[1])">Explore Hidden Gems</button>
     </div>
-  );
-
-  return(
-  <div style={{minHeight:"100vh",background:"var(--bg)",color:"var(--cream)",paddingBottom:"100px",position:"relative"}}>
-    <div style={{position:"fixed",inset:0,pointerEvents:"none",zIndex:0}}>
-      <div style={{position:"absolute",width:700,height:700,borderRadius:"50%",background:"radial-gradient(circle,rgba(130,20,8,.13),transparent)",top:-250,right:-200,filter:"blur(70px)"}}/>
-      <div style={{position:"absolute",width:800,height:800,borderRadius:"50%",background:"radial-gradient(circle,rgba(201,168,76,.055),transparent)",bottom:-350,left:-250,filter:"blur(90px)"}}/>
-      <svg style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:.48}} viewBox="0 0 200 200">
-        <defs><pattern id="mp" patternUnits="userSpaceOnUse" width="40" height="40">
-          <path d="M20 0L40 20L20 40L0 20Z" fill="none" stroke="rgba(201,168,76,.11)" strokeWidth=".4"/>
-          <circle cx="20" cy="20" r="3.5" fill="none" stroke="rgba(201,168,76,.07)" strokeWidth=".3"/>
-        </pattern></defs>
-        <rect width="200" height="200" fill="url(#mp)"/>
-      </svg>
-    </div>
-
-    <nav style={{position:"sticky",top:0,zIndex:50,background:"rgba(7,6,10,.93)",backdropFilter:"blur(20px)",borderBottom:"1px solid var(--border)"}}>
-      <div style={{maxWidth:900,margin:"0 auto",padding:"0 24px",display:"flex",alignItems:"center",justifyContent:"space-between",height:58}}>
-        <div style={{display:"flex",alignItems:"center",gap:8}}>
-          <span style={{color:"var(--gold)",fontSize:"1.25rem",animation:"float 4s ease infinite"}}>✦</span>
-          <span style={{fontFamily:"'Playfair Display',serif",fontSize:"1.05rem",color:"var(--cream)",letterSpacing:1}}>Agra <em>Unseen</em></span>
-        </div>
-        <a href={WA} target="_blank" rel="noopener noreferrer" style={{fontFamily:"'Montserrat',sans-serif",fontSize:".62rem",fontWeight:600,letterSpacing:"2px",textTransform:"uppercase",color:"var(--gold)",border:"1px solid rgba(201,168,76,.38)",padding:"7px 15px",textDecoration:"none"}}>Book Now</a>
-      </div>
-      <div className="tabnav" style={{maxWidth:900,margin:"0 auto",padding:"0 24px"}}>
-        {TABS.map(t=><button key={t.id} className={`nav-item ${tab===t.id?"on":""}`} onClick={()=>setTab(t.id)} style={{whiteSpace:"nowrap",flex:"none",paddingBottom:12}}>{t.l}</button>)}
-      </div>
-    </nav>
-
-    <div style={{maxWidth:860,margin:"0 auto",padding:"0 24px",position:"relative",zIndex:1}}>
-
-      {tab==="home"&&<>
-        {step==="welcome"&&(
-          <div style={{textAlign:"center",paddingTop:"80px",paddingBottom:"60px"}} className="fadeIn">
-            <p className="tag">Agra, India · Est. 1526</p><div className="divider"/>
-            <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:"clamp(3.2rem,11vw,6.5rem)",fontWeight:400,lineHeight:1,color:"var(--cream)"}}>Agra</h1>
-            <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:"clamp(3.2rem,11vw,6.5rem)",fontWeight:400,fontStyle:"italic",lineHeight:1.05}}><span className="gold-text">Unseen</span></h1>
-            <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"clamp(1.05rem,3vw,1.35rem)",fontWeight:300,lineHeight:1.9,fontStyle:"italic",color:"var(--cream-f)",maxWidth:520,margin:"30px auto 44px"}}>Seventeen million people visit the Taj each year.<br/>Almost none of them truly <em style={{color:"var(--cream-d)"}}>see</em> it.</p>
-            <p style={{fontFamily:"'Montserrat',sans-serif",fontSize:".67rem",letterSpacing:"3px",textTransform:"uppercase",color:"rgba(201,168,76,.45)",marginBottom:38}}>Your experience begins in 60 seconds</p>
-            <div style={{display:"flex",gap:14,justifyContent:"center",flexWrap:"wrap"}}>
-              <button className="bgold" onClick={()=>setStep("questions")}>Begin My Experience</button>
-              <button className="boutline" onClick={()=>setTab("hidden")}>Explore Hidden Gems</button>
-            </div>
-            <div style={{marginTop:64,display:"flex",gap:36,justifyContent:"center",flexWrap:"wrap",borderTop:"1px solid var(--border)",paddingTop:40}}>
-              {[["500+","Guests Guided"],["4.9★","Avg Rating"],["40+","Countries"],["₹0","Hidden Fees"]].map(([v,l])=>(
-                <div key={l} style={{textAlign:"center"}}>
-                  <div style={{fontFamily:"'Playfair Display',serif",fontSize:"1.75rem",color:"var(--gold)",fontWeight:600}}>{v}</div>
-                  <div style={{fontFamily:"'Montserrat',sans-serif",fontSize:".58rem",letterSpacing:"2px",textTransform:"uppercase",color:"var(--cream-f)",marginTop:4}}>{l}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {step==="questions"&&(
-          <div className="slideUp" style={{paddingTop:40,paddingBottom:60}}>
-            <div style={{textAlign:"center",marginBottom:44}}>
-              <p className="tag">Personalizing Your Journey</p><div className="divider"/>
-              <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:"clamp(1.8rem,5vw,2.5rem)",fontWeight:400,color:"var(--cream)"}}>Tell Me Who You Are</h2>
-              <p style={{color:"var(--cream-f)",fontStyle:"italic",marginTop:8,fontSize:"1.1rem"}}>Three questions. A completely personal Agra.</p>
-            </div>
-            <div style={{marginBottom:38}}>
-              <label style={{display:"block",marginBottom:14,color:"var(--gold)",fontFamily:"'Cormorant Garamond',serif",fontSize:"1.18rem",letterSpacing:1}}>01 — Where are you from?</label>
-              <div style={{position:"relative",display:"inline-block",width:"100%",maxWidth:340}}>
-                <select value={ans.nat} onChange={e=>setAns(p=>({...p,nat:e.target.value}))}>
-                  <option value="">Select your country</option>
-                  {NATS.map(n=><option key={n}>{n}</option>)}
-                </select>
-                <span style={{position:"absolute",right:16,top:"50%",transform:"translateY(-50%)",color:"var(--gold)",pointerEvents:"none"}}>▾</span>
-              </div>
-            </div>
-            <div style={{marginBottom:38}}>
-              <label style={{display:"block",marginBottom:14,color:"var(--gold)",fontFamily:"'Cormorant Garamond',serif",fontSize:"1.18rem",letterSpacing:1}}>02 — What moves you? <span style={{color:"var(--cream-f)",fontSize:".88rem"}}>(choose all that resonate)</span></label>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(210px,1fr))",gap:10}}>
-                {INTS.map(({id,label,icon,desc})=>(
-                  <button key={id} className={`ibtn ${ans.ints.includes(id)?"on":""}`} onClick={()=>togInt(id)}>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-                      <div><div style={{fontSize:"1.25rem",marginBottom:5}}>{icon}</div><div style={{fontSize:".98rem",fontWeight:500}}>{label}</div><div style={{fontSize:".8rem",color:"var(--cream-f)",marginTop:3}}>{desc}</div></div>
-                      {ans.ints.includes(id)&&<span style={{color:"var(--gold)",fontSize:".78rem"}}>✓</span>}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div style={{marginBottom:46}}>
-              <label style={{display:"block",marginBottom:14,color:"var(--gold)",fontFamily:"'Cormorant Garamond',serif",fontSize:"1.18rem",letterSpacing:1}}>03 — How long do you have?</label>
-              <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
-                {TIMES.map(({id,label,sub})=>(
-                  <button key={id} className={`tbtn ${ans.time===id?"on":""}`} onClick={()=>setAns(p=>({...p,time:id}))}>
-                    <div style={{fontSize:"1rem",fontWeight:500}}>{label}</div>
-                    <div style={{fontSize:".78rem",color:"var(--cream-f)",marginTop:3}}>{sub}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-            {err&&<p style={{color:"#ff7070",marginBottom:18,fontFamily:"'Montserrat',sans-serif",fontSize:".82rem"}}>{err}</p>}
-            <div style={{display:"flex",gap:14,alignItems:"center",flexWrap:"wrap"}}>
-              <button className="bgold" onClick={generate} disabled={!ok}>Reveal My Agra</button>
-              <button onClick={()=>setStep("welcome")} style={{background:"none",border:"none",color:"var(--cream-f)",cursor:"pointer",fontFamily:"'Montserrat',sans-serif",fontSize:".67rem",letterSpacing:"2px",textTransform:"uppercase"}}>← Back</button>
-            </div>
-          </div>
-        )}
-
-        {step==="loading"&&(
-          <div style={{textAlign:"center",paddingTop:120}} className="fadeIn">
-            <div style={{fontSize:"2.2rem",marginBottom:28,animation:"float 2s ease infinite"}}>✦</div>
-            <div className="ring"/>
-            <p style={{fontFamily:"'Playfair Display',serif",fontSize:"1.45rem",fontStyle:"italic",color:"var(--cream-d)",marginBottom:10}}>Reading your soul...</p>
-            <p style={{fontFamily:"'Montserrat',sans-serif",fontSize:".62rem",color:"rgba(201,168,76,.38)",letterSpacing:"3px",textTransform:"uppercase"}}>Crafting something made only for you</p>
-            <div style={{marginTop:56}}>
-              {["Consulting 400 years of Mughal history","Finding the story made for you","Mapping your perfect path"].map((t,i)=>(
-                <div key={i} style={{display:"flex",alignItems:"center",gap:14,marginBottom:14,justifyContent:"center",animation:`pulse ${1.4+i*0.4}s ease infinite`,fontFamily:"'Cormorant Garamond',serif",fontSize:"1rem",color:"var(--cream-f)"}}>
-                  <span style={{color:"var(--gold)",fontSize:".55rem"}}>◆</span>{t}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {step==="result"&&(
-          <div className="fadeIn" style={{paddingTop:40,paddingBottom:40}} ref={ref}>
-            <div style={{textAlign:"center",marginBottom:36}}>
-              <p className="tag">Made Only For You</p><div className="divider"/>
-              <h2 style={{fontFamily:"'Playfair Display',serif",fontSize:"clamp(1.8rem,5vw,2.5rem)",fontWeight:400,color:"var(--cream)"}}>Your Agra</h2>
-            </div>
-            <div style={{background:"linear-gradient(135deg,rgba(18,12,7,.92),rgba(10,7,14,.92))",border:"1px solid var(--border)",padding:"clamp(22px,5vw,50px)",position:"relative",marginBottom:36}}>
-              {[{top:"14px",left:"14px"},{top:"14px",right:"14px"},{bottom:"14px",left:"14px"},{bottom:"14px",right:"14px"}].map((s,i)=>(
-                <span key={i} style={{position:"absolute",...s,color:"rgba(201,168,76,.22)",fontSize:".95rem"}}>✦</span>
-              ))}
-              <div className="rbody" style={{fontFamily:"'Cormorant Garamond',serif"}} dangerouslySetInnerHTML={{__html:result.slice(0,vc).replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br/>")}}/>
-              {vc<result.length&&<span style={{display:"inline-block",width:"2px",height:"1.1em",background:"var(--gold)",marginLeft:2,animation:"blink .8s step-end infinite",verticalAlign:"text-bottom"}}/>}
-            </div>
-            <div style={{background:"linear-gradient(135deg,rgba(201,168,76,.07),rgba(201,168,76,.02))",border:"1px solid var(--gold)",padding:"34px 38px",marginBottom:28}}>
-              <p style={{fontFamily:"'Montserrat',sans-serif",fontSize:".62rem",letterSpacing:"3px",textTransform:"uppercase",color:"var(--gold)",marginBottom:10}}>Experience this in person</p>
-              <p style={{fontFamily:"'Playfair Display',serif",fontSize:"1.35rem",color:"var(--cream)",marginBottom:7}}>This is just the beginning.</p>
-              <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.03rem",color:"var(--cream-d)",lineHeight:1.7,marginBottom:22}}>I take small private groups through the Agra that doesn't exist in any guidebook. The stories above? Imagine hearing them standing inside the rooms where they happened.</p>
-              <div style={{display:"flex",gap:12,flexWrap:"wrap",alignItems:"center"}}>
-                <a href={WA} target="_blank" rel="noopener noreferrer" className="wabtn">💬 WhatsApp Me</a>
-                <a href={CALL} className="cbtn">📞 +91 {PHONE}</a>
-              </div>
-            </div>
-            <div style={{marginBottom:36}}>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(250px,1fr))",gap:14}}>
-                {REVS.map((r,i)=>(
-                  <div key={i} className="card" style={{padding:20}}>
-                    <div style={{color:"var(--gold)",marginBottom:8,fontSize:".88rem"}}>{"★".repeat(r.stars)}</div>
-                    <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:".94rem",color:"var(--cream-f)",lineHeight:1.75,marginBottom:10,fontStyle:"italic"}}>"{r.text}"</p>
-                    <p style={{fontFamily:"'Montserrat',sans-serif",fontSize:".62rem",letterSpacing:1,color:"var(--cream-f)"}}>{r.name} · {r.country}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
-              <button className="bgold" onClick={()=>{setStep("questions");setResult("");setVc(0);}}>Try Different Interests</button>
-              <button className="boutline" onClick={()=>setTab("book")}>See All Packages</button>
-            </div>
-          </div>
-        )}
-      </>}
-
-      {tab==="hidden"&&(
-        <div style={{paddingTop:48,paddingBottom:60}}>
-          <SH tag="Local Intelligence" title="Hidden Gems of Agra" sub="Places most tourists never find. A local's map."/>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))",gap:18}}>
-            {GEMS.map((g,i)=>(
-              <div key={i} className="card">
-                <span style={{fontSize:"1.9rem",marginBottom:12,display:"block"}}>{g.icon}</span>
-                <span className="badge">{g.badge}</span>
-                <h3 style={{fontFamily:"'Playfair Display',serif",fontSize:"1.18rem",fontWeight:600,color:"var(--cream)",marginBottom:10}}>{g.title}</h3>
-                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:".98rem",color:"var(--cream-d)",lineHeight:1.82}}>{g.body}</p>
-              </div>
-            ))}
-          </div>
-          <div style={{textAlign:"center",marginTop:52,padding:40,border:"1px solid var(--border)",background:"rgba(201,168,76,.035)"}}>
-            <p style={{fontFamily:"'Playfair Display',serif",fontSize:"1.45rem",color:"var(--cream)",marginBottom:10,fontStyle:"italic"}}>Want me to take you to all of these?</p>
-            <a href={WA} target="_blank" rel="noopener noreferrer" className="wabtn">💬 Plan My Visit</a>
-          </div>
-        </div>
-      )}
-
-      {tab==="scams"&&(
-        <div style={{paddingTop:48,paddingBottom:60}}>
-          <SH tag="Traveller Protection" title="Scam Shield" sub="The honest truth most guides won't tell you."/>
-          <div style={{background:"rgba(160,30,10,.08)",border:"1px solid rgba(160,30,10,.24)",borderLeft:"3px solid rgba(190,55,30,.55)",padding:"18px 26px",marginBottom:36}}>
-            <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.03rem",color:"rgba(255,175,155,.78)",lineHeight:1.75}}><strong style={{color:"rgba(255,145,120,.88)",display:"block",marginBottom:4}}>A word from your local:</strong>Agra has one of the most persistent tourist scam cultures in India. These will save you money, time, and peace of mind.</p>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))",gap:18}}>
-            {SCAMS.map((s,i)=>(
-              <div key={i} className="card">
-                <span style={{fontSize:"1.75rem",marginBottom:10,display:"block"}}>{s.icon}</span>
-                <h3 style={{fontFamily:"'Playfair Display',serif",fontSize:"1.12rem",fontWeight:600,color:"var(--cream)",marginBottom:10}}>{s.title}</h3>
-                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:".98rem",color:"var(--cream-d)",lineHeight:1.82}}>{s.body}</p>
-              </div>
-            ))}
-          </div>
-          <div style={{textAlign:"center",marginTop:52,padding:40,border:"1px solid var(--border)"}}>
-            <p style={{fontFamily:"'Playfair Display',serif",fontSize:"1.4rem",color:"var(--cream)",marginBottom:10}}>Still unsure about something?</p>
-            <a href={WA} target="_blank" rel="noopener noreferrer" className="wabtn">💬 Ask Me Anything</a>
-          </div>
-        </div>
-      )}
-
-      {tab==="hacks"&&(
-        <div style={{paddingTop:48,paddingBottom:60}}>
-          <SH tag="Insider Knowledge" title="Agra Travel Hacks" sub="Ten things that will make your trip dramatically better."/>
-          <div style={{display:"flex",flexDirection:"column",gap:14}}>
-            {HACKS.map((h,i)=>(
-              <div key={i} className="card" style={{display:"flex",gap:18,alignItems:"flex-start"}}>
-                <div style={{fontSize:"1.55rem",flexShrink:0,marginTop:2}}>{h.icon}</div>
-                <div>
-                  <span style={{fontFamily:"'Montserrat',sans-serif",fontSize:".58rem",letterSpacing:"2px",color:"var(--gold)",textTransform:"uppercase"}}>Hack #{String(i+1).padStart(2,"0")}</span>
-                  <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.03rem",color:"var(--cream-d)",lineHeight:1.82,marginTop:5}}>{h.tip}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div style={{textAlign:"center",marginTop:52,padding:40,border:"1px solid var(--border)"}}>
-            <p style={{fontFamily:"'Playfair Display',serif",fontSize:"1.45rem",color:"var(--cream)",marginBottom:10,fontStyle:"italic"}}>The ultimate hack? A local who knows everything.</p>
-            <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
-              <a href={WA} target="_blank" rel="noopener noreferrer" className="wabtn">💬 WhatsApp</a>
-              <a href={CALL} className="cbtn">📞 +91 {PHONE}</a>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {tab==="book"&&(
-        <div style={{paddingTop:48,paddingBottom:60}}>
-          <SH tag="Private Experiences" title="Book Your Agra" sub="Small groups. Deep stories. No scripts."/>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(290px,1fr))",gap:18,marginBottom:52}}>
-            {SVCS.map((s,i)=>(
-              <div key={i} className={`scard ${s.hl?"hl":""}`}>
-                {s.hl&&<div style={{position:"absolute",top:-1,left:"50%",transform:"translateX(-50%)",background:"var(--gold)",color:"#06040a",fontFamily:"'Montserrat',sans-serif",fontSize:".52rem",fontWeight:700,letterSpacing:"2px",textTransform:"uppercase",padding:"3px 16px"}}>Most Popular</div>}
-                <p style={{fontFamily:"'Montserrat',sans-serif",fontSize:".58rem",letterSpacing:"2px",textTransform:"uppercase",color:"var(--cream-f)",marginBottom:10}}>{s.dur}</p>
-                <h3 style={{fontFamily:"'Playfair Display',serif",fontSize:"1.25rem",color:"var(--cream)",marginBottom:8}}>{s.name}</h3>
-                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:".96rem",color:"var(--cream-f)",lineHeight:1.72,marginBottom:22}}>{s.desc}</p>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                  <span style={{fontFamily:"'Playfair Display',serif",fontSize:"1.55rem",color:s.hl?"var(--gold)":"var(--cream)",fontWeight:600}}>{s.price}</span>
-                  <a href={WA} target="_blank" rel="noopener noreferrer" style={{fontFamily:"'Montserrat',sans-serif",fontSize:".62rem",fontWeight:600,letterSpacing:"2px",textTransform:"uppercase",color:"var(--gold)",border:"1px solid rgba(201,168,76,.38)",padding:"7px 15px",textDecoration:"none"}}>Book →</a>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div style={{textAlign:"center",padding:"50px 36px",border:"1px solid var(--gold)",background:"linear-gradient(135deg,rgba(201,168,76,.06),rgba(201,168,76,.02))"}}>
-            <div style={{fontSize:"1.9rem",marginBottom:14,animation:"float 3s ease infinite"}}>✦</div>
-            <h3 style={{fontFamily:"'Playfair Display',serif",fontSize:"clamp(1.55rem,4vw,2.1rem)",fontWeight:400,color:"var(--cream)",marginBottom:10}}>Ready to see the real Agra?</h3>
-            <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.08rem",color:"var(--cream-f)",marginBottom:30,maxWidth:460,margin:"0 auto 30px"}}>Message me today. I reply within minutes.</p>
-            <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
-              <a href={WA} target="_blank" rel="noopener noreferrer" className="wabtn">💬 WhatsApp +91 {PHONE}</a>
-              <a href={CALL} className="cbtn">📞 Call Me</a>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div style={{borderTop:"1px solid var(--border)",paddingTop:28,paddingBottom:120,textAlign:"center",marginTop:20}}>
-        <span style={{color:"var(--gold)",fontSize:"1.1rem"}}>✦</span>
-        <p style={{fontFamily:"'Montserrat',sans-serif",fontSize:".58rem",letterSpacing:"3px",textTransform:"uppercase",color:"rgba(242,232,212,.18)",marginTop:10}}>Agra Unseen · Built by a local · Powered by AI · +91 {PHONE}</p>
-      </div>
-    </div>
-
-    <div className="fcta">
-      <a href={WA} target="_blank" rel="noopener noreferrer" className="wabtn">💬 WhatsApp</a>
-      <a href={CALL} className="cbtn">📞 Call +91 {PHONE}</a>
+    <div class="stats">
+      <div><div class="stat-val">500+</div><div class="stat-lbl">Guests Guided</div></div>
+      <div><div class="stat-val">4.9★</div><div class="stat-lbl">Avg Rating</div></div>
+      <div><div class="stat-val">40+</div><div class="stat-lbl">Countries</div></div>
+      <div><div class="stat-val">₹0</div><div class="stat-lbl">Hidden Fees</div></div>
     </div>
   </div>
-  );
+
+  <!-- QUESTIONS -->
+  <div id="s-questions" class="hidden" style="padding:40px 0 60px;animation:slideUp .7s ease">
+    <div style="text-align:center;margin-bottom:44px">
+      <p class="tag">Personalizing Your Journey</p><div class="divider"></div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,2.5rem);font-weight:400;color:var(--cream)">Tell Me Who You Are</h2>
+      <p style="color:var(--cream-f);font-style:italic;margin-top:8px;font-size:1.1rem">Three questions. A completely personal Agra.</p>
+    </div>
+
+    <div style="margin-bottom:36px">
+      <label style="display:block;margin-bottom:12px;color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:1.15rem;letter-spacing:1px">01 — Where are you from?</label>
+      <div style="position:relative;display:inline-block;width:100%;max-width:320px">
+        <select id="nat-select">
+          <option value="">Select your country</option>
+          <option>American</option><option>Canadian</option><option>Brazilian</option><option>Mexican</option>
+          <option>Argentinian</option><option>Colombian</option><option>British</option><option>French</option>
+          <option>German</option><option>Italian</option><option>Spanish</option><option>Portuguese</option>
+          <option>Dutch</option><option>Belgian</option><option>Swiss</option><option>Austrian</option>
+          <option>Swedish</option><option>Norwegian</option><option>Danish</option><option>Finnish</option>
+          <option>Polish</option><option>Czech</option><option>Hungarian</option><option>Romanian</option>
+          <option>Greek</option><option>Turkish</option><option>Russian</option><option>Ukrainian</option>
+          <option>Israeli</option><option>Saudi Arabian</option><option>Emirati</option><option>Qatari</option>
+          <option>Egyptian</option><option>South African</option><option>Nigerian</option><option>Kenyan</option>
+          <option>Moroccan</option><option>Japanese</option><option>Chinese</option><option>South Korean</option>
+          <option>Singaporean</option><option>Malaysian</option><option>Thai</option><option>Vietnamese</option>
+          <option>Indonesian</option><option>Filipino</option><option>Taiwanese</option>
+          <option>Australian</option><option>New Zealander</option>
+          <option>Indian</option><option>Pakistani</option><option>Bangladeshi</option><option>Sri Lankan</option>
+          <option>Nepali</option><option>Other</option>
+        </select>
+        <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--gold);pointer-events:none">▾</span>
+      </div>
+    </div>
+
+    <div style="margin-bottom:36px">
+      <label style="display:block;margin-bottom:12px;color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:1.15rem;letter-spacing:1px">02 — What moves you? <span style="color:var(--cream-f);font-size:.88rem">(choose all that resonate)</span></label>
+      <div class="grid-3">
+        <button class="int-btn" data-id="history" onclick="toggleInt(this)"><div style="font-size:1.2rem;margin-bottom:4px">🏛️</div><div style="font-size:.96rem;font-weight:500">History & Architecture</div><div style="font-size:.78rem;color:var(--cream-f);margin-top:2px">The empire behind the marble</div></button>
+        <button class="int-btn" data-id="spiritual" onclick="toggleInt(this)"><div style="font-size:1.2rem;margin-bottom:4px">🕌</div><div style="font-size:.96rem;font-weight:500">Spirituality & Sufism</div><div style="font-size:.78rem;color:var(--cream-f);margin-top:2px">The soul of Mughal philosophy</div></button>
+        <button class="int-btn" data-id="art" onclick="toggleInt(this)"><div style="font-size:1.2rem;margin-bottom:4px">🎨</div><div style="font-size:.96rem;font-weight:500">Art & Craftsmanship</div><div style="font-size:.78rem;color:var(--cream-f);margin-top:2px">The artisans who carry the legacy</div></button>
+        <button class="int-btn" data-id="food" onclick="toggleInt(this)"><div style="font-size:1.2rem;margin-bottom:4px">🍛</div><div style="font-size:.96rem;font-weight:500">Food & Street Culture</div><div style="font-size:.78rem;color:var(--cream-f);margin-top:2px">Flavours unchanged for centuries</div></button>
+        <button class="int-btn" data-id="photography" onclick="toggleInt(this)"><div style="font-size:1.2rem;margin-bottom:4px">📸</div><div style="font-size:.96rem;font-weight:500">Photography & Light</div><div style="font-size:.78rem;color:var(--cream-f);margin-top:2px">The angle nobody shows you</div></button>
+        <button class="int-btn" data-id="stories" onclick="toggleInt(this)"><div style="font-size:1.2rem;margin-bottom:4px">📖</div><div style="font-size:.96rem;font-weight:500">Human Stories</div><div style="font-size:.78rem;color:var(--cream-f);margin-top:2px">The people behind monuments</div></button>
+        <button class="int-btn" data-id="shopping" onclick="toggleInt(this)"><div style="font-size:1.2rem;margin-bottom:4px">💎</div><div style="font-size:.96rem;font-weight:500">Authentic Shopping</div><div style="font-size:.78rem;color:var(--cream-f);margin-top:2px">Real vs fake</div></button>
+        <button class="int-btn" data-id="offbeat" onclick="toggleInt(this)"><div style="font-size:1.2rem;margin-bottom:4px">🗺️</div><div style="font-size:.96rem;font-weight:500">Hidden & Offbeat</div><div style="font-size:.78rem;color:var(--cream-f);margin-top:2px">The Agra tourists never find</div></button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:44px">
+      <label style="display:block;margin-bottom:12px;color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:1.15rem;letter-spacing:1px">03 — How long do you have?</label>
+      <div class="flex-time">
+        <button class="time-btn" data-id="2 hours" onclick="selectTime(this)"><div style="font-size:.98rem;font-weight:500">2 Hours</div><div style="font-size:.76rem;color:var(--cream-f);margin-top:2px">Quick & essential</div></button>
+        <button class="time-btn" data-id="half day" onclick="selectTime(this)"><div style="font-size:.98rem;font-weight:500">Half Day</div><div style="font-size:.76rem;color:var(--cream-f);margin-top:2px">Morning or afternoon</div></button>
+        <button class="time-btn" data-id="full day" onclick="selectTime(this)"><div style="font-size:.98rem;font-weight:500">Full Day</div><div style="font-size:.76rem;color:var(--cream-f);margin-top:2px">Sunrise to sunset</div></button>
+        <button class="time-btn" data-id="2 days" onclick="selectTime(this)"><div style="font-size:.98rem;font-weight:500">2 Days</div><div style="font-size:.76rem;color:var(--cream-f);margin-top:2px">The real Agra</div></button>
+      </div>
+    </div>
+
+    <p id="err-msg" class="hidden" style="color:#ff7070;margin-bottom:16px;font-family:'Montserrat',sans-serif;font-size:.8rem"></p>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <button class="btn-gold" id="reveal-btn" onclick="generateExp()" disabled>Reveal My Agra</button>
+      <button onclick="showScreen('welcome')" style="background:none;border:none;color:var(--cream-f);cursor:pointer;font-family:'Montserrat',sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase">← Back</button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="s-loading" class="hidden" style="text-align:center;padding:120px 0;animation:fadeIn .9s ease">
+    <div style="font-size:2rem;margin-bottom:24px;animation:float 2s ease infinite">✦</div>
+    <div class="ring"></div>
+    <p style="font-family:'Playfair Display',serif;font-size:1.4rem;font-style:italic;color:var(--cream-d);margin-bottom:10px">Reading your soul...</p>
+    <p style="font-family:'Montserrat',sans-serif;font-size:.6rem;color:rgba(201,168,76,.35);letter-spacing:3px;text-transform:uppercase">Crafting something made only for you</p>
+    <div style="margin-top:52px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;justify-content:center;animation:pulse 1.4s ease infinite;font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream-f)"><span style="color:var(--gold);font-size:.5rem">◆</span>Consulting 400 years of Mughal history</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;justify-content:center;animation:pulse 1.8s ease infinite;font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream-f)"><span style="color:var(--gold);font-size:.5rem">◆</span>Finding the story made for you</div>
+      <div style="display:flex;align-items:center;gap:12px;justify-content:center;animation:pulse 2.2s ease infinite;font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream-f)"><span style="color:var(--gold);font-size:.5rem">◆</span>Mapping your perfect path through Agra</div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="s-result" class="hidden" style="padding:40px 0;animation:fadeIn .9s ease">
+    <div style="text-align:center;margin-bottom:32px">
+      <p class="tag">Made Only For You</p><div class="divider"></div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,2.5rem);font-weight:400;color:var(--cream)">Your Agra</h2>
+    </div>
+    <div class="result-box" style="margin-bottom:32px">
+      <span class="corner" style="top:12px;left:12px">✦</span>
+      <span class="corner" style="top:12px;right:12px">✦</span>
+      <span class="corner" style="bottom:12px;left:12px">✦</span>
+      <span class="corner" style="bottom:12px;right:12px">✦</span>
+      <div id="result-text" style="font-family:'Cormorant Garamond',serif"></div>
+      <span class="cursor" id="result-cursor"></span>
+    </div>
+    <div class="cta-box">
+      <p style="font-family:'Montserrat',sans-serif;font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Experience this in person</p>
+      <p style="font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--cream);margin-bottom:6px">This is just the beginning.</p>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream-d);line-height:1.7;margin-bottom:20px">I take small private groups through the Agra that doesn't exist in any guidebook. Imagine hearing these stories standing inside the rooms where they happened.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <a href="https://wa.me/918279890892" target="_blank" class="btn-wa">💬 WhatsApp Me</a>
+        <a href="tel:+918279890892" class="btn-call">📞 +91 8279890892</a>
+      </div>
+    </div>
+    <div class="rev-grid">
+      <div class="rev-card"><div style="color:var(--gold);margin-bottom:7px;font-size:.85rem">★★★★★</div><p style="font-family:'Cormorant Garamond',serif;font-size:.93rem;color:var(--cream-f);line-height:1.75;margin-bottom:9px;font-style:italic">"I've traveled to 40 countries. This was the most personal cultural experience I've ever had."</p><p style="font-family:'Montserrat',sans-serif;font-size:.58rem;letter-spacing:1px;color:var(--cream-f)">Sarah M. · 🇺🇸 USA</p></div>
+      <div class="rev-card"><div style="color:var(--gold);margin-bottom:7px;font-size:.85rem">★★★★★</div><p style="font-family:'Cormorant Garamond',serif;font-size:.93rem;color:var(--cream-f);line-height:1.75;margin-bottom:9px;font-style:italic">"Best decision of our entire India trip. Mehtab Bagh at sunset — unforgettable."</p><p style="font-family:'Montserrat',sans-serif;font-size:.58rem;letter-spacing:1px;color:var(--cream-f)">Thomas K. · 🇩🇪 Germany</p></div>
+      <div class="rev-card"><div style="color:var(--gold);margin-bottom:7px;font-size:.85rem">★★★★★</div><p style="font-family:'Cormorant Garamond',serif;font-size:.93rem;color:var(--cream-f);line-height:1.75;margin-bottom:9px;font-style:italic">"His knowledge gave me a completely different understanding of what I was looking at."</p><p style="font-family:'Montserrat',sans-serif;font-size:.58rem;letter-spacing:1px;color:var(--cream-f)">Yuki H. · 🇯🇵 Japan</p></div>
+      <div class="rev-card"><div style="color:var(--gold);margin-bottom:7px;font-size:.85rem">★★★★★</div><p style="font-family:'Cormorant Garamond',serif;font-size:.93rem;color:var(--cream-f);line-height:1.75;margin-bottom:9px;font-style:italic">"Even as Indians we learned things we never knew. The pietra dura workshop was beyond special."</p><p style="font-family:'Montserrat',sans-serif;font-size:.58rem;letter-spacing:1px;color:var(--cream-f)">Priya & Raj · 🇬🇧 UK</p></div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn-gold" onclick="resetForm()">Try Different Interests</button>
+      <button class="btn-outline" onclick="showTab('book',document.querySelectorAll('.tab')[4])">See All Packages</button>
+    </div>
+  </div>
+
+</div><!-- end tab-home -->
+
+<!-- ═══ HIDDEN GEMS ═══ -->
+<div id="tab-hidden" class="hidden" style="padding:48px 0 60px">
+  <div style="text-align:center;margin-bottom:48px"><p class="tag">Local Intelligence</p><div class="divider"></div><h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:400;color:var(--cream)">Hidden Gems of Agra</h2><p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream-f);font-style:italic;margin-top:8px">Places most tourists never find. A local's map.</p></div>
+  <div class="grid-2">
+    <div class="card"><span style="font-size:1.8rem;margin-bottom:10px;display:block">🌅</span><span class="badge">FREE ENTRY</span><h3 style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:600;color:var(--cream);margin-bottom:9px">Mehtab Bagh at Sunset</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.96rem;color:var(--cream-d);line-height:1.82">Directly across the Yamuna from the Taj. Where Shah Jahan sat under house arrest staring at his wife's tomb. The most emotional spot in Agra. Almost no tourists.</p></div>
+    <div class="card"><span style="font-size:1.8rem;margin-bottom:10px;display:block">🕌</span><span class="badge">10 MIN AWAY</span><h3 style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:600;color:var(--cream);margin-bottom:9px">Itimad-ud-Daulah — Baby Taj</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.96rem;color:var(--cream-d);line-height:1.82">Built 14 years before the Taj. First Mughal building entirely in white marble. Often completely empty. Architects consider it more precise than the Taj itself.</p></div>
+    <div class="card"><span style="font-size:1.8rem;margin-bottom:10px;display:block">🏰</span><span class="badge">AGRA FORT</span><h3 style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:600;color:var(--cream);margin-bottom:9px">Musamman Burj — The Prisoner's Tower</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.96rem;color:var(--cream-d);line-height:1.82">Where Shah Jahan spent his last 8 years imprisoned by his son Aurangzeb, staring at the Taj. He died here eyes fixed on Mumtaz's tomb. Ask guards specifically for 'Musamman Burj'.</p></div>
+    <div class="card"><span style="font-size:1.8rem;margin-bottom:10px;display:block">🎨</span><span class="badge">FREE TO VISIT</span><h3 style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:600;color:var(--cream);margin-bottom:9px">Living Pietra Dura Workshops</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.96rem;color:var(--cream-d);line-height:1.82">In the lanes behind Taj Ganj, families have practiced stone inlay for 18 generations — the same craft that built the Taj. Watch them work. Buy direct at a fraction of shop prices.</p></div>
+    <div class="card"><span style="font-size:1.8rem;margin-bottom:10px;display:block">🍽️</span><span class="badge">LOCAL PICK</span><h3 style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:600;color:var(--cream);margin-bottom:9px">Pinch of Spice</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.96rem;color:var(--cream-d);line-height:1.82">MG Road. Mughlai food tracing recipes to royal kitchens. Order the Nihari and Shahi Tukda. What tourists miss by eating at hotel restaurants.</p></div>
+    <div class="card"><span style="font-size:1.8rem;margin-bottom:10px;display:block">🌙</span><span class="badge">BOOK IN ADVANCE</span><h3 style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:600;color:var(--cream);margin-bottom:9px">Taj by Moonlight</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.96rem;color:var(--cream-d);line-height:1.82">On full moon nights ASI allows moonlight viewing 10PM–midnight. Only 400 tickets. Shah Jahan designed the marble to glow differently under moonlight.</p></div>
+    <div class="card"><span style="font-size:1.8rem;margin-bottom:10px;display:block">📿</span><span class="badge">SPIRITUAL</span><h3 style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:600;color:var(--cream);margin-bottom:9px">Jama Masjid Dawn Prayer</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.96rem;color:var(--cream-d);line-height:1.82">Built by Shah Jahan's daughter Jahanara. A dawn prayer unchanged from the 17th century. Something that has happened here every single day for 370 years.</p></div>
+    <div class="card"><span style="font-size:1.8rem;margin-bottom:10px;display:block">🛤️</span><span class="badge">NO TOURISTS</span><h3 style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:600;color:var(--cream);margin-bottom:9px">Kinari Bazaar</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.96rem;color:var(--cream-d);line-height:1.82">The wholesale market where real Agra lives. A ₹50 chai and a conversation here will teach you more than any tour, guidebook, or museum.</p></div>
+  </div>
+  <div class="cta-center" style="margin-top:48px">
+    <p style="font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--cream);margin-bottom:10px;font-style:italic">Want me to take you to all of these?</p>
+    <a href="https://wa.me/918279890892" target="_blank" class="btn-wa">💬 Plan My Visit</a>
+  </div>
+</div>
+
+<!-- ═══ SCAMS ═══ -->
+<div id="tab-scams" class="hidden" style="padding:48px 0 60px">
+  <div style="text-align:center;margin-bottom:48px"><p class="tag">Traveller Protection</p><div class="divider"></div><h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:400;color:var(--cream)">Scam Shield</h2><p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream-f);font-style:italic;margin-top:8px">The honest truth most guides won't tell you.</p></div>
+  <div class="warn-box"><p style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:rgba(255,175,155,.78);line-height:1.75"><strong style="color:rgba(255,145,120,.88);display:block;margin-bottom:4px">A word from your local:</strong>Agra has one of the most persistent tourist scam cultures in India. These will save you money, time, and peace of mind.</p></div>
+  <div class="grid-2">
+    <div class="card"><span style="font-size:1.7rem;margin-bottom:9px;display:block">🚗</span><h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:600;color:var(--cream);margin-bottom:9px">The 'Taj is Closed Today' Lie</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.96rem;color:var(--cream-d);line-height:1.82">A driver will tell you the Taj is closed and offer to take you to a marble shop instead. The Taj closes only on Fridays. Never believe this from a stranger.</p></div>
+    <div class="card"><span style="font-size:1.7rem;margin-bottom:9px;display:block">💎</span><h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:600;color:var(--cream);margin-bottom:9px">Fake Marble at Real Prices</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.96rem;color:var(--cream-d);line-height:1.82">Most souvenirs are alabaster not marble. Real marble is cold to touch even in summer. Tap it — marble sounds solid, alabaster sounds hollow.</p></div>
+    <div class="card"><span style="font-size:1.7rem;margin-bottom:9px;display:block">📸</span><h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:600;color:var(--cream);margin-bottom:9px">The Friendly Photographer</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.96rem;color:var(--cream-d);line-height:1.82">Someone offers to take your photo then demands ₹500–2000. Smile, say no thank you, keep walking.</p></div>
+    <div class="card"><span style="font-size:1.7rem;margin-bottom:9px;display:block">🎫</span><h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:600;color:var(--cream);margin-bottom:9px">Fake Ticket Sellers</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.96rem;color:var(--cream-d);line-height:1.82">Never buy Taj tickets outside the gate. Official tickets cost ₹1100 for foreigners. Buy only at official ASI kiosks.</p></div>
+    <div class="card"><span style="font-size:1.7rem;margin-bottom:9px;display:block">🛺</span><h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:600;color:var(--cream);margin-bottom:9px">The Broken Meter</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.96rem;color:var(--cream-d);line-height:1.82">Always fix price before getting into any auto. Fair rate from Agra Cantonment to Taj gate is ₹150–200.</p></div>
+    <div class="card"><span style="font-size:1.7rem;margin-bottom:9px;display:block">🏨</span><h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:600;color:var(--cream);margin-bottom:9px">The Hotel Redirect</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.96rem;color:var(--cream-d);line-height:1.82">Your driver may claim your hotel burned down and take you to a cousin's guesthouse. Call your hotel directly immediately.</p></div>
+    <div class="card"><span style="font-size:1.7rem;margin-bottom:9px;display:block">🌿</span><h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:600;color:var(--cream);margin-bottom:9px">The Commission Guide</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.96rem;color:var(--cream-d);line-height:1.82">If your guide insists on visiting a 'traditional store' you didn't ask for — you are the product being sold.</p></div>
+    <div class="card"><span style="font-size:1.7rem;margin-bottom:9px;display:block">👶</span><h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:600;color:var(--cream);margin-bottom:9px">Organized Begging</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.96rem;color:var(--cream-d);line-height:1.82">If you want to help, buy food from a shop and give that — not cash. Cash encourages the system.</p></div>
+  </div>
+  <div class="cta-center" style="margin-top:48px">
+    <p style="font-family:'Playfair Display',serif;font-size:1.35rem;color:var(--cream);margin-bottom:10px">Still unsure about something?</p>
+    <a href="https://wa.me/918279890892" target="_blank" class="btn-wa">💬 Ask Me Anything</a>
+  </div>
+</div>
+
+<!-- ═══ HACKS ═══ -->
+<div id="tab-hacks" class="hidden" style="padding:48px 0 60px">
+  <div style="text-align:center;margin-bottom:48px"><p class="tag">Insider Knowledge</p><div class="divider"></div><h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:400;color:var(--cream)">Agra Travel Hacks</h2><p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream-f);font-style:italic;margin-top:8px">Ten things that will make your trip dramatically better.</p></div>
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <div class="card" style="display:flex;gap:16px;align-items:flex-start"><div style="font-size:1.5rem;flex-shrink:0;margin-top:2px">⏰</div><div><span style="font-family:'Montserrat',sans-serif;font-size:.56rem;letter-spacing:2px;color:var(--gold);text-transform:uppercase">Hack #01</span><p style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream-d);line-height:1.82;margin-top:4px">Enter at 6 AM opening. You have 40 minutes before tour buses arrive. The Taj at dawn with mist off the Yamuna — you will never forget it.</p></div></div>
+    <div class="card" style="display:flex;gap:16px;align-items:flex-start"><div style="font-size:1.5rem;flex-shrink:0;margin-top:2px">👟</div><div><span style="font-family:'Montserrat',sans-serif;font-size:.56rem;letter-spacing:2px;color:var(--gold);text-transform:uppercase">Hack #02</span><p style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream-d);line-height:1.82;margin-top:4px">Wear slip-on shoes. You must remove footwear at the mausoleum. Socks + slip-ons = the sanity everyone else lacks.</p></div></div>
+    <div class="card" style="display:flex;gap:16px;align-items:flex-start"><div style="font-size:1.5rem;flex-shrink:0;margin-top:2px">💧</div><div><span style="font-family:'Montserrat',sans-serif;font-size:.56rem;letter-spacing:2px;color:var(--gold);text-transform:uppercase">Hack #03</span><p style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream-d);line-height:1.82;margin-top:4px">Buy water before entering. Inside the complex vendors charge 3x. Simple math.</p></div></div>
+    <div class="card" style="display:flex;gap:16px;align-items:flex-start"><div style="font-size:1.5rem;flex-shrink:0;margin-top:2px">📱</div><div><span style="font-family:'Montserrat',sans-serif;font-size:.56rem;letter-spacing:2px;color:var(--gold);text-transform:uppercase">Hack #04</span><p style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream-d);line-height:1.82;margin-top:4px">Download Google Maps offline for Agra before arriving. Data is patchy near the Taj complex.</p></div></div>
+    <div class="card" style="display:flex;gap:16px;align-items:flex-start"><div style="font-size:1.5rem;flex-shrink:0;margin-top:2px">🌡️</div><div><span style="font-family:'Montserrat',sans-serif;font-size:.56rem;letter-spacing:2px;color:var(--gold);text-transform:uppercase">Hack #05</span><p style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream-d);line-height:1.82;margin-top:4px">October to March is ideal. April to June is brutal — 45°C+. If visiting in summer, arrive at opening and leave by 10 AM.</p></div></div>
+    <div class="card" style="display:flex;gap:16px;align-items:flex-start"><div style="font-size:1.5rem;flex-shrink:0;margin-top:2px">🎒</div><div><span style="font-family:'Montserrat',sans-serif;font-size:.56rem;letter-spacing:2px;color:var(--gold);text-transform:uppercase">Hack #06</span><p style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream-d);line-height:1.82;margin-top:4px">Tripods, selfie sticks, and food are prohibited inside. Leave at the free cloakroom near the gate.</p></div></div>
+    <div class="card" style="display:flex;gap:16px;align-items:flex-start"><div style="font-size:1.5rem;flex-shrink:0;margin-top:2px">💰</div><div><span style="font-family:'Montserrat',sans-serif;font-size:.56rem;letter-spacing:2px;color:var(--gold);text-transform:uppercase">Hack #07</span><p style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream-d);line-height:1.82;margin-top:4px">Carry cash in small denominations. Many small shops and autos don't accept foreign cards.</p></div></div>
+    <div class="card" style="display:flex;gap:16px;align-items:flex-start"><div style="font-size:1.5rem;flex-shrink:0;margin-top:2px">🚶</div><div><span style="font-family:'Montserrat',sans-serif;font-size:.56rem;letter-spacing:2px;color:var(--gold);text-transform:uppercase">Hack #08</span><p style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream-d);line-height:1.82;margin-top:4px">Walk the full perimeter before entering the mausoleum. The gardens and gateways are as significant as the tomb itself.</p></div></div>
+    <div class="card" style="display:flex;gap:16px;align-items:flex-start"><div style="font-size:1.5rem;flex-shrink:0;margin-top:2px">📷</div><div><span style="font-family:'Montserrat',sans-serif;font-size:.56rem;letter-spacing:2px;color:var(--gold);text-transform:uppercase">Hack #09</span><p style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream-d);line-height:1.82;margin-top:4px">Best photograph: stand inside the main gateway arch looking through — the dome frames itself perfectly. Every iconic Taj photo uses this composition.</p></div></div>
+    <div class="card" style="display:flex;gap:16px;align-items:flex-start"><div style="font-size:1.5rem;flex-shrink:0;margin-top:2px">🤝</div><div><span style="font-family:'Montserrat',sans-serif;font-size:.56rem;letter-spacing:2px;color:var(--gold);text-transform:uppercase">Hack #10</span><p style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--cream-d);line-height:1.82;margin-top:4px">A guide who actually lives here changes everything. WhatsApp +91 8279890892 before your visit.</p></div></div>
+  </div>
+  <div class="cta-center" style="margin-top:48px">
+    <p style="font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--cream);margin-bottom:10px;font-style:italic">The ultimate hack? A local who knows everything.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <a href="https://wa.me/918279890892" target="_blank" class="btn-wa">💬 WhatsApp</a>
+      <a href="tel:+918279890892" class="btn-call">📞 +91 8279890892</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BOOK ═══ -->
+<div id="tab-book" class="hidden" style="padding:48px 0 60px">
+  <div style="text-align:center;margin-bottom:48px"><p class="tag">Private Experiences</p><div class="divider"></div><h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:400;color:var(--cream)">Book Your Agra</h2><p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream-f);font-style:italic;margin-top:8px">Small groups. Deep stories. No scripts.</p></div>
+  <div class="grid-2" style="margin-bottom:48px">
+    <div class="scard"><p style="font-family:'Montserrat',sans-serif;font-size:.56rem;letter-spacing:2px;text-transform:uppercase;color:var(--cream-f);margin-bottom:9px">3 hours</p><h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--cream);margin-bottom:7px">Taj Sunrise Experience</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.94rem;color:var(--cream-f);line-height:1.72;margin-bottom:20px">Private guided walk. Dawn entry. Stories nobody else tells. Artisan workshop visit.</p><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--cream);font-weight:600">₹2,500</span><a href="https://wa.me/918279890892" target="_blank" style="font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.38);padding:7px 14px;text-decoration:none">Book →</a></div></div>
+    <div class="scard popular"><div class="pop-badge">Most Popular</div><p style="font-family:'Montserrat',sans-serif;font-size:.56rem;letter-spacing:2px;text-transform:uppercase;color:var(--cream-f);margin-bottom:9px;margin-top:10px">7 hours</p><h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--cream);margin-bottom:7px">Full Agra Immersion</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.94rem;color:var(--cream-f);line-height:1.72;margin-bottom:20px">Taj + Agra Fort + Baby Taj + local lunch + Kinari Bazaar. The complete picture.</p><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--gold);font-weight:600">₹4,500</span><a href="https://wa.me/918279890892" target="_blank" style="font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.38);padding:7px 14px;text-decoration:none">Book →</a></div></div>
+    <div class="scard"><p style="font-family:'Montserrat',sans-serif;font-size:.56rem;letter-spacing:2px;text-transform:uppercase;color:var(--cream-f);margin-bottom:9px">2 days</p><h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--cream);margin-bottom:7px">Two-Day Deep Dive</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.94rem;color:var(--cream-f);line-height:1.72;margin-bottom:20px">Everything above + Fatehpur Sikri + moonlight Taj + farewell dinner.</p><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--cream);font-weight:600">₹8,000</span><a href="https://wa.me/918279890892" target="_blank" style="font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.38);padding:7px 14px;text-decoration:none">Book →</a></div></div>
+    <div class="scard"><p style="font-family:'Montserrat',sans-serif;font-size:.56rem;letter-spacing:2px;text-transform:uppercase;color:var(--cream-f);margin-bottom:9px">Flexible</p><h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--cream);margin-bottom:7px">Custom Experience</h3><p style="font-family:'Cormorant Garamond',serif;font-size:.94rem;color:var(--cream-f);line-height:1.72;margin-bottom:20px">Photography tours, architecture deep-dives, food trails. Built entirely around you.</p><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--cream);font-weight:600">Ask Me</span><a href="https://wa.me/918279890892" target="_blank" style="font-family:'Montserrat',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(201,168,76,.38);padding:7px 14px;text-decoration:none">Book →</a></div></div>
+  </div>
+  <div class="cta-gold">
+    <div style="font-size:1.8rem;margin-bottom:12px;animation:float 3s ease infinite">✦</div>
+    <h3 style="font-family:'Playfair Display',serif;font-size:clamp(1.5rem,4vw,2rem);font-weight:400;color:var(--cream);margin-bottom:10px">Ready to see the real Agra?</h3>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--cream-f);margin:0 auto 28px;max-width:440px">Message me today. I reply within minutes.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <a href="https://wa.me/918279890892" target="_blank" class="btn-wa">💬 WhatsApp +91 8279890892</a>
+      <a href="tel:+918279890892" class="btn-call">📞 Call Me</a>
+    </div>
+  </div>
+</div>
+
+<div class="foot">
+  <span style="color:var(--gold);font-size:1rem">✦</span>
+  <p style="font-family:'Montserrat',sans-serif;font-size:.55rem;letter-spacing:3px;text-transform:uppercase;color:rgba(242,232,212,.15);margin-top:8px">Agra Unseen · Built by a local · Powered by AI · +91 8279890892</p>
+</div>
+
+</div><!-- end wrap -->
+
+<div class="fcta">
+  <a href="https://wa.me/918279890892" target="_blank" class="btn-wa">💬 WhatsApp</a>
+  <a href="tel:+918279890892" class="btn-call">📞 Call +91 8279890892</a>
+</div>
+
+<script>
+var selNat='', selInts=[], selTime='', fullResult='', dispChars=0, tyTimer=null;
+
+function showTab(id, el) {
+  ['home','hidden','scams','hacks','book'].forEach(function(t){
+    document.getElementById('tab-'+t).classList.add('hidden');
+  });
+  document.getElementById('tab-'+id).classList.remove('hidden');
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  if(el) el.classList.add('active');
+  window.scrollTo(0,0);
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+function showScreen(id) {
+  ['welcome','questions','loading','result'].forEach(function(s){
+    document.getElementById('s-'+s).classList.add('hidden');
+  });
+  document.getElementById('s-'+id).classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+
+function toggleInt(btn) {
+  var id = btn.getAttribute('data-id');
+  if(btn.classList.contains('selected')){
+    btn.classList.remove('selected');
+    selInts = selInts.filter(function(i){return i!==id;});
+  } else {
+    btn.classList.add('selected');
+    selInts.push(id);
+  }
+  checkReady();
+}
+
+function selectTime(btn) {
+  document.querySelectorAll('.time-btn').forEach(function(b){b.classList.remove('selected');});
+  btn.classList.add('selected');
+  selTime = btn.getAttribute('data-id');
+  checkReady();
+}
+
+document.getElementById('nat-select').addEventListener('change', function(){
+  selNat = this.value;
+  checkReady();
+});
+
+function checkReady() {
+  document.getElementById('reveal-btn').disabled = !(selNat && selInts.length > 0 && selTime);
+}
+
+function typeWriter() {
+  if(dispChars < fullResult.length){
+    dispChars = Math.min(dispChars+3, fullResult.length);
+    var html = fullResult.slice(0,dispChars)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--gold);font-family:\'Playfair Display\',serif;font-size:1.12rem;display:block;margin-top:24px;margin-bottom:6px">$1</strong>')
+      .replace(/\n/g,'<br>');
+    document.getElementById('result-text').innerHTML = html;
+    tyTimer = setTimeout(typeWriter, 10);
+  } else {
+    document.getElementById('result-cursor').style.display='none';
+  }
+}
+
+function resetForm() {
+  if(tyTimer) clearTimeout(tyTimer);
+  fullResult=''; dispChars=0;
+  document.getElementById('result-text').innerHTML='';
+  document.getElementById('result-cursor').style.display='inline-block';
+  showScreen('questions');
+}
+
+async function generateExp() {
+  showScreen('loading');
+  document.getElementById('err-msg').classList.add('hidden');
+
+  var prompt = 'You are a 24-year-old local from Agra — grew up in the shadow of the Taj Mahal, deeply studying Indian and Mughal history. Warm, intelligent, passionate about Agra.\n\nTourist: Nationality: '+selNat+', Interests: '+selInts.join(', ')+', Time: '+selTime+'\n\nUse EXACTLY these headers:\n\n**YOUR AGRA BEGINS HERE**\n2-3 sentences. Find a surprising historical connection between '+selNat+' and the Mughal world. Make them feel their story is woven into Agra\'s fabric.\n\n**THE SECRET THE GUIDEBOOKS MISSED**\nOne breathtaking lesser-known story matched to their interests. Choose from: the Taj minarets lean outward by design so if they fall they won\'t crush the tomb; Shah Jahan planned a black marble Taj for himself before being imprisoned; the calligraphy uses forced perspective — letters get larger higher up so they appear uniform from ground level; 28 gemstones from across the ancient world are inlaid in the marble. Pick the one that hits hardest.\n\n**YOUR PERFECT '+selTime.toUpperCase()+' ITINERARY**\nTime-specific vivid itinerary. One hidden spot only a local knows, one authentic food stop, one moment of stillness, one experience connecting their interests to this city.\n\n**ONE THING BEFORE YOU LEAVE**\nOne single action not on any tourist list that permanently separates their visit from every other visitor\'s.\n\n**THE QUESTION FOR YOUR FLIGHT HOME**\nOne philosophical question about Shah Jahan, love, empire, or mortality tailored to their background.\n\nWrite as a warm knowledgeable local friend. Intimate, specific, occasionally poetic, always honest.';
+
+  try {
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1200,
+        messages: [{role:'user', content:prompt}]
+      })
+    });
+    var data = await res.json();
+    var text = '';
+    if(data.content) data.content.forEach(function(c){if(c.text) text+=c.text;});
+    if(!text) text = 'Something went wrong. Please try again.';
+    fullResult = text;
+    dispChars = 0;
+    document.getElementById('result-cursor').style.display='inline-block';
+    showScreen('result');
+    setTimeout(typeWriter, 300);
+  } catch(e) {
+    var err = document.getElementById('err-msg');
+    err.textContent = 'Connection failed. Please check your internet and try again.';
+    err.classList.remove('hidden');
+    showScreen('questions');
+  }
+}
 </script>
 </body>
 </html>
