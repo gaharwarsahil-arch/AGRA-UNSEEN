@@ -125,7 +125,7 @@ One philosophical question about Shah Jahan, love, empire, or mortality tailored
 Write as a warm knowledgeable local friend. Intimate, specific, occasionally poetic, always honest.`;
 
     try{
-      const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,messages:[{role:"user",content:prompt}]})});
+      const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","anthropic-dangerous-direct-browser-access":"true"},,body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,messages:[{role:"user",content:prompt}]})});
       const d=await r.json();
       const t=d.content?.map(c=>c.text||"").join("")||"Something went wrong. Please try again.";
       setResult(t);setVc(0);setStep("result");
